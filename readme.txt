@@ -4,7 +4,7 @@ and then fed it to my dog
 user defined variables are in the same "id space" as the built in functions/constants, so a built in user defined variable
 cannot have the same id as a built in function/constant
 
-all variables are resizeable arrays of numbers that can represent integers, strings, or functions
+all variables are resizeable pointer arrays of numbers that can represent integers, strings, or functions
 
 variables do not have to contain data, a variable can contain executable code too
 
@@ -52,7 +52,7 @@ stack manipulation
 0 - push(n) pushes n amount of numbers after the function call onto the top cell of the stack. both push and pushvar are called by placing their argument directly 
 after them in the program, not by placing the argument on the stack
 1 - pushvar(id) pushes contents of the variable referenced by id to the top cell of the stack
-2 - store(id) stores the top cell of the stack to the variable referenced by id. if a variable with the id does not exist,
+2 - store(id) stores the second to top cell of the stack to the variable referenced by the top cell. if a variable with the id does not exist,
 it is created.
 3 - duplicate() pushes a copy of the top cell of the stack to the stack
 4 - pop() removes the top cell of the stack
@@ -62,10 +62,11 @@ index to.
 7 - get_length pushes length of the top cell of the stack to the stack
 8 - set_length(length) takes the second to top cell of the stack as length, and resizes the top cell of the stack to be that length, either filling the empty space with zero,
 or truncating the cell to the desired length
+26 - swap() swaps top 2 elements on stack
 
 math (only valid if the affected cells are single numbers)
-9 - add(n1,n2) adds top 2 cells of the stack (re-aligned to be relative to 0).
-10 - subtract(n1,n2) subtracts the second cell of the stack from the top cells on the stack (both re-aligned to be relative to 0).
+9 - add(n1,n2) adds top 2 cells of the stack
+10 - subtract(n1,n2) subtracts the second cell of the stack from the top cell on the stack
 11 - multiply(n1,n2) multiplies the top 2 cells of the stack
 12 - divide(n1,n2) divides second cell of the stack by the top cell
 

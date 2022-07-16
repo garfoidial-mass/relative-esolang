@@ -105,6 +105,12 @@ def set_length():
             arr.append(0)
     stack.append(arr)
 
+def swap():
+    top = stack.pop()
+    second = stack.pop()
+    stack.append(top)
+    stack.append(second)
+
 def add():
     n2 = stack.pop()[0]
     n1 = stack.pop()[0]
@@ -185,9 +191,11 @@ def conditional():
 def run():
     code = stack.pop()
     blocks.append(Block(code))
+    blocks[len(blocks)-1].instruction_pointer -= 1
 
 def rel_return():
     blocks.pop()
+
 
 def print_string():
     arr = stack.pop()
@@ -239,7 +247,8 @@ vars = {
     22:print_string,
     23:print_numbers,
     24:rel_input,
-    25:rel_input_int
+    25:rel_input_int,
+    26:swap
 }
 while len(blocks) > 0:
     vars[blocks[len(blocks)-1].instructions[blocks[len(blocks)-1].instruction_pointer]]()

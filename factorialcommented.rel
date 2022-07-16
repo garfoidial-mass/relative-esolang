@@ -1,0 +1,30 @@
+0 26   ; push next 26 numbers (factorial() function body) to stack
+-23    ; duplicate the function argument
+-3 1 0 ; push one to stack
+16     ; check if argument is greater than one
+-17 10 ; push true block (next 10 numbers)
+-7     ; duplicate argument
+-3 1 0 ; push 1 to stack
+9      ; subtract 1 from the duplicated argument
+-9 29  ; push contents of var 30 (will be factorial() when function is run) to stack
+-10    ; run top of stack
+-9     ; multiply the 2 top elements of the stack
+10     ; return from function
+
+-21 5  ; push false block (next 5 numbers)
+-1     ; pop the top element of the stack off
+-4 1 0 ; push 1 to the stack
+20     ; return from function
+
+-2 ; run conditional (if third to top elem. is 1, run true block. else, run false block)
+
+2 ; return from function
+
+-21 1 29 ;pushes 30 to stack
+-28      ; stores factorial() to var 30
+
+-2 1 6 ; push 7 to stack
+-6 29  ; push contents of var 30 (factorial()) to stack
+-10    ; run top of stack
+3      ; print result of factorial(7)
+-2     ; exit the program
