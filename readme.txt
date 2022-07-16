@@ -49,7 +49,8 @@ i'll write an example program, a basic "HELLO WORLD!":
 built in id's:
 
 stack manipulation
-0 - push(n) pushes n amount of numbers after the function call onto the top cell of the stack
+0 - push(n) pushes n amount of numbers after the function call onto the top cell of the stack. both push and pushvar are called by placing their argument directly 
+after them in the program, not by placing the argument on the stack
 1 - pushvar(id) pushes contents of the variable referenced by id to the top cell of the stack
 2 - store(id) stores the top cell of the stack to the variable referenced by id. if a variable with the id does not exist,
 it is created.
