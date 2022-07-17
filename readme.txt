@@ -1,8 +1,8 @@
 relative - a simple stack based language but i put the syntax into a woodchipper and then into a sausage grinder and then into a pressure cooker and then ate it and shat it out
 and then fed it to my dog
 
-user defined variables are in the same "id space" as the built in functions/constants, so a built in user defined variable
-cannot have the same id as a built in function/constant
+user defined variables are not in the same "id space" as the built in functions/constants, so a built in user defined variable
+can have the same id as a built in function/constant, as they are called differently.
 
 all variables are resizeable pointer arrays of numbers that can represent integers, strings, or functions
 

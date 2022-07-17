@@ -26,6 +26,8 @@ def derelativize(relative_prog):
 
 file = open(sys.argv[1])
 filestring = file.read()
+filestring+="\n"
+filestring = re.sub(r"\;(.*)(.*?)\n","",filestring)
 relative_program = re.split(r" +|\n+",filestring)
 relative_program2 = []
 
@@ -221,7 +223,7 @@ def rel_input_int():
     val = int(input())
     stack.append([val])
 
-vars = {
+funcs = {
     0:push,
     1:push_var,
     2:store,
@@ -251,7 +253,7 @@ vars = {
     26:swap
 }
 while len(blocks) > 0:
-    vars[blocks[len(blocks)-1].instructions[blocks[len(blocks)-1].instruction_pointer]]()
+    funcs[blocks[len(blocks)-1].instructions[blocks[len(blocks)-1].instruction_pointer]]()
     if len(blocks) > 0:
         blocks[len(blocks)-1].instruction_pointer+=1
         if blocks[len(blocks)-1].instruction_pointer >= len(blocks[len(blocks)-1].instructions):

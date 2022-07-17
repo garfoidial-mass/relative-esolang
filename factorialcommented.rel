@@ -23,8 +23,8 @@
 -21 1 29 ;pushes 30 to stack
 -28      ; stores factorial() to var 30
 
--2 1 6 ; push 7 to stack
--6 29  ; push contents of var 30 (factorial()) to stack
+23 ; take user input as an integer, push to stack
+-24 29  ; push contents of var 30 (factorial()) to stack
 -10    ; run top of stack
 3      ; print result of factorial(7)
 -2     ; exit the program
