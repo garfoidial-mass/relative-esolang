@@ -1,0 +1,135 @@
+relative has been a a fun thing to design and implement, and its been fun for me to write some small programs in it.
+I feel like the language has some cool features and is somewhat interesting, and i want to be able to use it without
+the esoteric-ness of it. Even with the numbers not being relative, a list of numbers is not easy to read or write.
+
+For this reason i am making relative into a real language, which i am calling BIAL or Big Inc. Integer Array Language
+This language will have almost the same functionality as base relative, with added file io.
+It will be transpiled to the internal "id code" that the relative interpreter uses, then run from that.
+
+BIAL only has one data type: integer array pointer.
+
+syntax:
+like in forth, values are push to the stack simply by writing them. however, since variables are all arrays,
+only arrays are counted as values. all else is treated as a function.
+
+comments go at the end of lines, after a semicolon
+
+to push an array, place 2 square brackets around space seperated elements.
+[1 2 3 4]
+to push a string (int array in disguise), place quotes around your text inside of an array. This will be converted into an array of
+ascii codes.
+["balls"]
+
+you can place strings inside integer arrays as well:
+[1 2 3 "balls" 4 5 6]
+the characters of the string will be seperated into individual elements, and those will be converted into ascii 
+codes, shown below
+[1 2 3 98 97 108 108 115 4 5 6]
+
+attempting to put an array inside an array (eg. [1 2 3 ["balls"] 4 5 6]) does not work as you may expect.
+the square brackets around the numbers decay into the id for the instruction to push, and the length of the array to
+push (which is the argument for the instruction). this is useful for functions, but WILL NOT CREATE AN ARRAY INSIDE
+THE ARRAY.
+
+as built in instructions are converted to integer ids when interpreting, you can place them in arrays as well. This
+is how functions are created.
+
+[or not return] would store the instructions to compute nor of the top two values of the stack then return, to the
+stack
+
+Variables:
+to create a variable, you simply write its name. If the variable exists, this pushes its internal id onto the stack.
+If not, the variable is created and the id is pushed to the stack. The "store" function stores the second to top
+element on the stack into the variable referenced by the id on the top of the stack. The "val" function pushes the
+value of the variable referenced by the id on top of the stack to the stack.
+["balls"]
+var1 store
+var1 val
+this pushes the array [98 97 108 108 115] to the stack, then pops it off the stack into var1. then, it pushes the
+value of var1 back to the stack.
+
+Functions (user defined):
+because everything in the language decays into an integer array pointer, you can place instructions into a variable
+and run it off the stack. The "run" function attempts to run the top element of the stack as exectuable code.
+procedure for creating a function:
+
+[["h"] print return] ; function to print the letter 'h'
+print_h store ; store that to variable print_h
+
+procedure for running function:
+
+print_h val run; push the id of print_h to the stack. then push the value of print_h to the stack. then, run the
+; code off the top of the stack.
+
+Functions (built in):
+Calling a built in function is simple, just write its name in the program. the name of built in function can be a 
+symbol. 
+
+The built in functions and their functions are listed below:
+
+stack manipulation
+store(id) - stores the second to top element in the stack to the variable referenced by the id in the top element. 
+if a variable with the id does not exist, it is created.
+dup() -  pushes a copy of the top element of the stack to the stack
+pop() -  removes the top element of the stack
+seti(val, index) - takes the top element of the stack as an index into the third to top element of the stack, and the second to top element of the stack as the value to set the
+index to. 
+geti(index) - takes the top element of the stack as an index into the second to top element, and pushes that value to the stack
+getl() - pushes length of the top element of the stack to the stack
+setl(length) - takes the second to top element of the stack as length, and resizes the top element of the stack to be that length, either filling the empty space with zero,
+or truncating the element to the desired length
+swap() - swaps top 2 elements on stack
+
+math (only valid if the affected elements are single numbers)
++(n1,n2) - adds top 2 elements of the stack
+-(n1,n2) - subtracts the second element of the stack from the top element on the stack
+*(n1,n2) - multiplies the top 2 elements of the stack
+/(n1,n2) - divides second element of the stack by the top element
+
+comparisons - all comparisons push 1 to the top of the stack if true, or 9 if false
+&(n1,n2) - ands the top 2 elements of the stack
+!(n) - inverts the top element on the stack (if its not 0, switch it to 0. if it is 0, switch it to 1).
+|(n1,n2) - ors the top 2 elements of the stack
+<(n1,n2) - checks if the second to top element of the stack is less than the top element, pushes 1 if yes, 
+else pushes 0
+>(n1,n2) - checks if the second to top element of the stack is greater than the top element, pushes 1 if yes, 
+else pushes 0
+
+=(n1,n2) checks if the top 2 elements of the stack are equal, valid even if the top 2 elements are not single numbers
+
+flow control
+if() - includes an else block always. a colon (:) marks the end of the if block, and a period (.) marks the end of the else block.
+if the top of the stack is 0, skip to the instruction after the period: else, continue the program until the colon and skip the else block.
+non-0 is true.  the second to top and top elements must contain executable code. the second to top element of the stack is run if the condition is true, and the top element is run if
+the condition is false.
+run(block) runs the top element of the stack as executable code, will repeat it until a break()/return() is found
+return() breaks out of the current code section. if called in the main section (not inside a variable), it will exit the program.
+
+i/o
+prints() - prints the top element of the stack (only valid if the top element of the stack is a valid ascii string)
+printn() - prints the top element of the stack as a list of numbers seperated by spaces
+inputs() - takes in a line of stdin input and pushes it to the top of the stack
+inputn() - takes in a line of stdin input, converts it to an integer, and pushes it to the top of the stack
+
+
+while loop example:
+
+[0] ; push initial state for the loop
+
+;push loop code to the stack
+[dup 30 < ; checks if the the top value of the stack is less than 30 
+ if ; if top of stack isnt 0, run section between if and colon, else run block between colon and period
+ dup printn [1] + :
+ return .
+]
+run
+
+this is equivalent to this c code:
+int x = 0;
+while(x < 30)
+{
+    printf("%i\n", x);
+    x += 1;
+}
+
+or this c code
