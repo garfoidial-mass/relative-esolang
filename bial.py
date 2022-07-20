@@ -1,10 +1,5 @@
 import re
 import sys
-# for running code blocks: create code block class that has an array of instructions and a instruction pointer.
-# then, have the code blocks be stored in an array, basically another stack
-# the codeblock at the top of the stack runs repeatedly
-# a return statement pops the current code block off the stack and increments the new current code block's instruction pointer by 1
-
 class Block:
     instructions = []
     instruction_pointer = 0
@@ -12,36 +7,25 @@ class Block:
     def __init__(self, instructions):
         self.instructions = instructions
 
-def derelativize(relative_prog):
-    last_id = 0
-    new_id = 0
-
-    program = []
-
-    for relative_id in relative_prog:
-        new_id = relative_id+last_id
-        program.append(new_id)
-        last_id=new_id
-    return program
 
 file = open(sys.argv[1])
 filestring = file.read()
 filestring+="\n"
 filestring = re.sub(r"\;(.*)(.*?)\n","",filestring)
-relative_program = re.split(r" +|\n+",filestring)
-relative_program2 = []
+program = re.split(r" +|\n+",filestring)
+program2 = []
 
-for i in range(0,len(relative_program)):
-    if relative_program[i] != '':
-        relative_program2.append(int(relative_program[i]))
+for i in range(0,len(program)):
+    if program[i] != '':
+        program2.append(int(program[i]))
 
-print(relative_program2)
-instructions = derelativize(relative_program2)
-print(instructions)
+print(program2)
+
+#i need an if and skip
 
 blocks = []
 
-program = Block(instructions)
+program = Block(program2)
 
 blocks.append(program)
 
@@ -52,7 +36,7 @@ vars = {
     
 }
 
-def push():
+def bial_push():
     blocks[len(blocks)-1].instruction_pointer+=1
     count = blocks[len(blocks)-1].instructions[blocks[len(blocks)-1].instruction_pointer]
     pushedval = []
@@ -62,42 +46,42 @@ def push():
         count-=1
     stack.append(pushedval)
 
-def push_var():
+def bial_push_var():
     blocks[len(blocks)-1].instruction_pointer+=1
     id = blocks[len(blocks)-1].instructions[blocks[len(blocks)-1].instruction_pointer]
     stack.append(vars[id])
 
-def store():
+def bial_store():
     id = stack.pop()[0]
     vars[id] = stack.pop()
 
-def duplicate():
+def bial_duplicate():
     topval = stack.pop()
     stack.append(topval)
     stack.append(topval)
 
-def pop():
+def bial_pop():
     stack.pop()
 
-def set_index():
+def bial_set_index():
     index = stack.pop()
     val = stack.pop()
     arr = stack.pop()
     arr[index] = val
     stack.append(arr)
 
-def get_index():
+def bial_get_index():
     index = stack.pop()
     arr = stack.pop()
     stack.append(arr)
     stack.append([arr[index]])
 
-def get_length():
+def bial_get_length():
     arr = stack.pop()
     stack.append(arr)
     stack.append([len(arr)])
 
-def set_length():
+def bial_set_length():
     length = stack.pop()
     arr = stack.pop()
     if length < len(arr):
@@ -107,33 +91,33 @@ def set_length():
             arr.append(0)
     stack.append(arr)
 
-def swap():
+def bial_swap():
     top = stack.pop()
     second = stack.pop()
     stack.append(top)
     stack.append(second)
 
-def add():
+def bial_add():
     n2 = stack.pop()[0]
     n1 = stack.pop()[0]
     stack.append([n1+n2])
 
-def subtract():
+def bial_subtract():
     n2 = stack.pop()[0]
     n1 = stack.pop()[0]
     stack.append([n1-n2])
 
-def multiply():
+def bial_multiply():
     n2 = stack.pop()[0]
     n1 = stack.pop()[0]
     stack.append([n1*n2])
 
-def divide():
+def bial_divide():
     n2 = stack.pop()[0]
     n1 = stack.pop()[0]
     stack.append([n1/n2])
 
-def rel_and():
+def bial_and():
     n2 = stack.pop()[0]
     n1 = stack.pop()[0]
     if n1 and n2:
@@ -141,14 +125,14 @@ def rel_and():
     else:
         stack.append([0])
 
-def rel_not():
+def bial_not():
     n1 = stack.pop()[0]
     if n1 == 0:
         stack.append([1])
     else:
         stack.append([0])
 
-def rel_or():
+def bial_or():
     n2 = stack.pop()[0]
     n1 = stack.pop()[0]
     if n1 or n2:
@@ -156,7 +140,7 @@ def rel_or():
     else:
         stack.append([0])
 
-def less_than():
+def bial_less_than():
     n2 = stack.pop()[0]
     n1 = stack.pop()[0]
     if n1<n2:
@@ -164,7 +148,7 @@ def less_than():
     else:
         stack.append([0])
 
-def greater_than():
+def bial_greater_than():
     n2 = stack.pop()[0]
     n1 = stack.pop()[0]
     if n1>n2:
@@ -172,7 +156,7 @@ def greater_than():
     else:
         stack.append([0])
 
-def equal():
+def bial_equal():
     n2 = stack.pop()
     n1 = stack.pop()
     if n1 == n2:
@@ -180,77 +164,81 @@ def equal():
     else:
         stack.append([0])
 
-def conditional():
-    falserun = stack.pop()
-    truerun = stack.pop()
+def bial_skip():
+    count = stack.pop()
+    blocks[len(blocks)-1].instruction_pointer += count
+
+def bial_if():
+    falselen = stack.pop()
+    truelen = stack.pop()
     condition = stack.pop()[0]
     if condition != 0:
-        blocks.append(Block(truerun))
+        return
     else:
-        blocks.append(Block(falserun))
-    blocks[len(blocks)-1].instruction_pointer -= 1
+        stack.append(truelen)
+        bial_skip()
 
-def run():
+def bial_run():
     code = stack.pop()
     blocks.append(Block(code))
     blocks[len(blocks)-1].instruction_pointer -= 1
 
-def rel_return():
+def bial_return():
     blocks.pop()
 
 
-def print_string():
+def bial_print_string():
     arr = stack.pop()
     string = ""
     for c in arr:
         string += chr(c)
     print(string,end="")
 
-def print_numbers():
+def bial_print_numbers():
     arr = stack.pop()
     for n in arr:
         print(n,end=" ")
     print("\n")
 
-def rel_input():
+def bial_input():
     string = input()
     arr = []
     for c in string:
         arr.append(ord(c))
     stack.append(arr)
 
-def rel_input_int():
+def bial_input_int():
     val = int(input())
     stack.append([val])
 
 funcs = {
-    0:push,
-    1:push_var,
-    2:store,
-    3:duplicate,
-    4:pop,
-    5:set_index,
-    6:get_index,
-    7:get_length,
-    8:set_length,
-    9:add,
-    10:subtract,
-    11:multiply,
-    12:divide,
-    13:rel_and,
-    14:rel_not,
-    15:rel_or,
-    16:less_than,
-    17:greater_than,
-    18:equal,
-    19:conditional,
-    20:run,
-    21:rel_return,
-    22:print_string,
-    23:print_numbers,
-    24:rel_input,
-    25:rel_input_int,
-    26:swap
+    0:bial_push,
+    1:bial_push_var,
+    2:bial_store,
+    3:bial_duplicate,
+    4:bial_pop,
+    5:bial_set_index,
+    6:bial_get_index,
+    7:bial_get_length,
+    8:bial_set_length,
+    9:bial_add,
+    10:bial_subtract,
+    11:bial_multiply,
+    12:bial_divide,
+    13:bial_and,
+    14:bial_not,
+    15:bial_or,
+    16:bial_less_than,
+    17:bial_greater_than,
+    18:bial_equal,
+    19:bial_if,
+    20:bial_run,
+    21:bial_return,
+    22:bial_print_string,
+    23:bial_print_numbers,
+    24:bial_input,
+    25:bial_input_int,
+    26:bial_swap
 }
 while len(blocks) > 0:
     funcs[blocks[len(blocks)-1].instructions[blocks[len(blocks)-1].instruction_pointer]]()

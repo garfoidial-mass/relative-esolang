@@ -98,7 +98,8 @@ else pushes 0
 =(n1,n2) checks if the top 2 elements of the stack are equal, valid even if the top 2 elements are not single numbers
 
 flow control
-if() - includes an else block always. a colon (:) marks the end of the if block, and a period (.) marks the end of the else block.
+skip(count) - count is the top cell of the stack, and is the first element in the top element of the stack. skip the number of instructions in count.
+if() - includes an else block always. a colon (:) marks the end of the if block and the start of the else block, and a period (.) marks the end of the   block.
 if the top of the stack is 0, skip to the instruction after the period: else, continue the program until the colon and skip the else block.
 non-0 is true.  the second to top and top elements must contain executable code. the second to top element of the stack is run if the condition is true, and the top element is run if
 the condition is false.
@@ -114,15 +115,14 @@ inputn() - takes in a line of stdin input, converts it to an integer, and pushes
 
 while loop example:
 
-[0] ; push initial state for the loop
-
+[0] ; push initial count for the loop
 ;push loop code to the stack
 [dup 30 < ; checks if the the top value of the stack is less than 30 
  if ; if top of stack isnt 0, run section between if and colon, else run block between colon and period
- dup printn [1] + :
- return .
+ dup printn [1] + : ; print the top cell of the stack as numbers, then add 1 to it
+ pop return . ; return from the loop
 ]
-run
+run ; run the loop
 
 this is equivalent to this c code:
 int x = 0;
@@ -133,3 +133,8 @@ while(x < 30)
 }
 
 or this c code
+
+for(int x = 0; x < 30; x++)
+{
+    printf("%i\n", x);
+}
