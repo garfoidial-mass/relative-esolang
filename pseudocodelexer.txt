@@ -1,0 +1,49 @@
+enum NODETYPE {NONE=0,IF,PUSH}
+enum TOKENTYPE {VALUE,BUILTIN,CONTROL,CONTROL_END}
+struct token
+{
+    int type
+    string chars
+}
+
+token* tokens = {...}
+
+
+
+struct node{
+    token* tokensptr
+    node* parent
+    int start
+    int end
+    node*[] children
+    int type
+}
+
+node Startnode = {tokens,NULL,0,len(tokens)-1,NULL,NONE}
+
+func buildtree(node* basenode){
+    for(int i = 0; i < len(tokens); i++)
+    {
+        token currentToken = node->tokensptr[i]
+        if(currentToken.type == CONTROL)
+        {
+
+            node* newNode = {basenode->tokens,basenode,i,basenode->end,NULL,NONE}
+            switch(currentToken.text)
+            {
+                case "if":
+                    newNode.type = IF
+                    break
+                case "[":
+                    newNode.type = PUSH
+                    break
+            }
+            buildtree(newNode)
+        }
+        else if(currentToken.type == CONTROL_END)
+        {
+            basenode.end = i
+            return
+        }
+    }
+}

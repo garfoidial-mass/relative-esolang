@@ -100,6 +100,7 @@ def bial_swap():
 def bial_add():
     n2 = stack.pop()[0]
     n1 = stack.pop()[0]
+    
     stack.append([n1+n2])
 
 def bial_subtract():
@@ -169,7 +170,6 @@ def bial_skip():
     blocks[len(blocks)-1].instruction_pointer += count
 
 def bial_if():
-    falselen = stack.pop()
     truelen = stack.pop()
     condition = stack.pop()[0]
     if condition != 0:
@@ -231,14 +231,15 @@ funcs = {
     16:bial_less_than,
     17:bial_greater_than,
     18:bial_equal,
-    19:bial_if,
-    20:bial_run,
-    21:bial_return,
-    22:bial_print_string,
-    23:bial_print_numbers,
-    24:bial_input,
-    25:bial_input_int,
-    26:bial_swap
+    19:bial_skip,
+    20:bial_if,
+    21:bial_run,
+    22:bial_return,
+    23:bial_print_string,
+    24:bial_print_numbers,
+    25:bial_input,
+    26:bial_input_int,
+    27:bial_swap
 }
 while len(blocks) > 0:
     funcs[blocks[len(blocks)-1].instructions[blocks[len(blocks)-1].instruction_pointer]]()

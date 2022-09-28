@@ -68,7 +68,8 @@ symbol.
 The built in functions and their functions are listed below:
 
 stack manipulation
-store(id) - stores the second to top element in the stack to the variable referenced by the id in the top element. 
+val(identifier) - pushes the value of the specified variable the stack
+store(identifier) - stores the second to top element in the stack to the specified variable. 
 if a variable with the id does not exist, it is created.
 dup() -  pushes a copy of the top element of the stack to the stack
 pop() -  removes the top element of the stack
@@ -80,13 +81,13 @@ setl(length) - takes the second to top element of the stack as length, and resiz
 or truncating the element to the desired length
 swap() - swaps top 2 elements on stack
 
-math (only valid if the affected elements are single numbers)
+math
 +(n1,n2) - adds top 2 elements of the stack
 -(n1,n2) - subtracts the second element of the stack from the top element on the stack
 *(n1,n2) - multiplies the top 2 elements of the stack
 /(n1,n2) - divides second element of the stack by the top element
 
-comparisons - all comparisons push 1 to the top of the stack if true, or 9 if false
+comparisons - all comparisons push 1 to the top of the stack if true, or 0 if false
 &(n1,n2) - ands the top 2 elements of the stack
 !(n) - inverts the top element on the stack (if its not 0, switch it to 0. if it is 0, switch it to 1).
 |(n1,n2) - ors the top 2 elements of the stack
@@ -95,14 +96,14 @@ else pushes 0
 >(n1,n2) - checks if the second to top element of the stack is greater than the top element, pushes 1 if yes, 
 else pushes 0
 
-=(n1,n2) checks if the top 2 elements of the stack are equal, valid even if the top 2 elements are not single numbers
+=(n1,n2) checks if the top 2 elements of the stack are equal
 
 flow control
 skip(count) - count is the top cell of the stack, and is the first element in the top element of the stack. skip the number of instructions in count.
-if() - includes an else block always. a colon (:) marks the end of the if block and the start of the else block, and a period (.) marks the end of the   block.
-if the top of the stack is 0, skip to the instruction after the period: else, continue the program until the colon and skip the else block.
-non-0 is true.  the second to top and top elements must contain executable code. the second to top element of the stack is run if the condition is true, and the top element is run if
-the condition is false.
+if() - a colon (:) marks the end of the if block and the start of the else block, and a period (.) marks the end of the entire statement block.
+if the top of the stack is 0, skip to the instruction after the colon. else, continue the program until the colon and skip the else block.
+in id code, push the length of the true block (in instructions) to the stack before calling, and place a skip with the length of the else block as the argument at the end of 
+the true block. 
 run(block) runs the top element of the stack as executable code, will repeat it until a break()/return() is found
 return() breaks out of the current code section. if called in the main section (not inside a variable), it will exit the program.
 
