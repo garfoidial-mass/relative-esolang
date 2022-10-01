@@ -47,8 +47,7 @@ def bial_push():
     stack.append(pushedval)
 
 def bial_push_var():
-    blocks[len(blocks)-1].instruction_pointer+=1
-    id = blocks[len(blocks)-1].instructions[blocks[len(blocks)-1].instruction_pointer]
+    id = stack.pop()[0]
     stack.append(vars[id])
 
 def bial_store():
@@ -74,12 +73,10 @@ def bial_set_index():
 def bial_get_index():
     index = stack.pop()
     arr = stack.pop()
-    stack.append(arr)
     stack.append([arr[index]])
 
 def bial_get_length():
     arr = stack.pop()
-    stack.append(arr)
     stack.append([len(arr)])
 
 def bial_set_length():
@@ -199,7 +196,7 @@ def bial_print_numbers():
     arr = stack.pop()
     for n in arr:
         print(n,end=" ")
-    print("\n")
+    print("")
 
 def bial_input():
     string = input()

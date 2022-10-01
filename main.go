@@ -185,7 +185,7 @@ func translatetree(basenode *Node) []int {
 				VarIDs[currentToken.chars] = nextID
 				nextID++
 			}
-			localprogram = append(localprogram, VarIDs[currentToken.chars])
+			localprogram = append(localprogram, 0, 1, VarIDs[currentToken.chars])
 		case TOK_Value:
 			if currentToken.chars[0] == '"' {
 				for _, character := range currentToken.chars {
@@ -263,6 +263,9 @@ func main() {
 
 	program := translatetree(basenode)
 
-	fmt.Println(program)
-
+	file, err := os.Create(os.Args[2])
+	strprogram := fmt.Sprint(program)
+	strprogram = strprogram[1 : len(strprogram)-1]
+	file.Write([]byte(strprogram))
+	file.Close()
 }
