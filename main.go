@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strconv"
 	"unicode"
 )
 
@@ -66,6 +67,7 @@ var ids = map[string]int{
 	"inputs": 25,
 	"inputi": 26,
 	"swap":   27,
+	":":      30,
 }
 
 func createTokens(tokenStrings [][]string) []Token {
@@ -142,27 +144,93 @@ func printtree(basenode *Node) {
 	}
 }
 
-func translatetree(basenode *Node, program []int) []int {
-	localprogram := make([]int, 0)
-	switch basenode.nodeType {
-	case NODE_PushBlock:
-		blocktokens := basenode.tokens[basenode.start+1 : basenode.end]
-		localprogram = append(localprogram, 0, len(blocktokens))
-	case NODE_IfBlock:
+var nextID int = 35
+var VarIDs map[string]int
 
+func insert(a []int, index int, value int) []int {
+	if len(a) == index { // nil or empty slice or after last element
+		return append(a, value)
 	}
+	a = append(a[:index+1], a[index:]...) // index < len(a)
+	a[index] = value
+	return a
+}
 
-	childCount := 0
+func translatetree(basenode *Node) []int {
+	localprogram := make([]int, 0)
+	childprograms := make([][]int, 0)
+
 	if len(basenode.children) > 0 {
-		for i, child := range basenode.children {
-			translatetree(child, localprogram)
+		for _, child := range basenode.children {
+			childprograms = append(childprograms, translatetree(child))
 		}
 	}
+	childcounter := 0
+	for i := basenode.start; i <= basenode.end; i++ {
+		if childcounter < len(basenode.children) {
+			if i == basenode.children[childcounter].start {
+				localprogram = append(localprogram, childprograms[childcounter]...)
+				i = basenode.children[childcounter].end
+				childcounter++
+			}
+		}
+
+		currentToken := basenode.tokens[i]
+
+		switch currentToken.tokenType {
+		case TOK_Builtin:
+			localprogram = append(localprogram, ids[currentToken.chars])
+		case TOK_Identifier:
+			if VarIDs[currentToken.chars] == 0 {
+				VarIDs[currentToken.chars] = nextID
+				nextID++
+			}
+			localprogram = append(localprogram, VarIDs[currentToken.chars])
+		case TOK_Value:
+			if currentToken.chars[0] == '"' {
+				for _, character := range currentToken.chars {
+					localprogram = append(localprogram, int(character))
+				}
+			} else {
+				v, err := strconv.Atoi(currentToken.chars)
+				if err != nil {
+					fmt.Println("Invalid Integer: ", currentToken.chars)
+					panic("Compilation Error!")
+				}
+				localprogram = append(localprogram, v)
+			}
+		}
+	}
+
+	switch basenode.nodeType {
+	case NODE_PushBlock:
+		localprogram = append([]int{0, len(localprogram)}, localprogram...)
+	case NODE_IfBlock:
+		truelen := 0
+		for truelen = 0; truelen < len(localprogram); truelen++ { // 30 is id for ':', start of else block
+			if localprogram[truelen] == 30 {
+				break
+			}
+		}
+		falselen := len(localprogram) - truelen - 1
+		//skip false block
+		localprogram[truelen] = 0
+		localprogram = insert(localprogram, truelen+1, 1)
+		localprogram = insert(localprogram, truelen+2, falselen)
+		localprogram = insert(localprogram, truelen+3, ids["skip"])
+		truelen += 4
+
+		localprogram = append([]int{0, 1, truelen, ids["if"]}, localprogram...)
+
+	}
+	return localprogram
 }
 
 func main() {
 	args := os.Args[1:]
 	fmt.Println("compiling", args[0])
+
+	VarIDs = make(map[string]int)
 
 	commentre := regexp.MustCompile(`(\;(.*))`)
 	tokenre := regexp.MustCompile(`(["|a-z|A-Z|0-9]+|[^a-z|^A-Z|^0-9|^ \r\n])`)
@@ -191,6 +259,10 @@ func main() {
 	buildtree(basenode, -1)
 
 	fmt.Println("Tree:")
-	printtree(basenode)
+	//printtree(basenode)
+
+	program := translatetree(basenode)
+
+	fmt.Println(program)
 
 }

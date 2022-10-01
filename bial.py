@@ -56,9 +56,10 @@ def bial_store():
     vars[id] = stack.pop()
 
 def bial_duplicate():
-    topval = stack.pop()
-    stack.append(topval)
-    stack.append(topval)
+    if len(stack) > 0:
+        topval = stack.pop()
+        stack.append(topval)
+        stack.append(topval)
 
 def bial_pop():
     stack.pop()
@@ -166,7 +167,7 @@ def bial_equal():
         stack.append([0])
 
 def bial_skip():
-    count = stack.pop()
+    count = stack.pop()[0]
     blocks[len(blocks)-1].instruction_pointer += count
 
 def bial_if():
