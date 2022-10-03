@@ -207,18 +207,24 @@ func translatetree(basenode *Node) []int {
 		localprogram = append([]int{0, len(localprogram)}, localprogram...)
 	case NODE_IfBlock:
 		truelen := 0
+		elseflag := 0
+
 		for truelen = 0; truelen < len(localprogram); truelen++ { // 30 is id for ':', start of else block
 			if localprogram[truelen] == 30 {
+				elseflag = 1
 				break
 			}
 		}
-		falselen := len(localprogram) - truelen - 1
-		//skip false block
-		localprogram[truelen] = 0
-		localprogram = insert(localprogram, truelen+1, 1)
-		localprogram = insert(localprogram, truelen+2, falselen)
-		localprogram = insert(localprogram, truelen+3, ids["skip"])
-		truelen += 4
+
+		//skip else block
+		if elseflag == 1 {
+			falselen := len(localprogram) - truelen - 1
+			localprogram[truelen] = 0
+			localprogram = insert(localprogram, truelen+1, 1)
+			localprogram = insert(localprogram, truelen+2, falselen)
+			localprogram = insert(localprogram, truelen+3, ids["skip"])
+			truelen += 4
+		}
 
 		localprogram = append([]int{0, 1, truelen, ids["if"]}, localprogram...)
 

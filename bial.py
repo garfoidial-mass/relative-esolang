@@ -21,8 +21,6 @@ for i in range(0,len(program)):
 
 print(program2)
 
-#i need an if and skip
-
 blocks = []
 
 program = Block(program2)
@@ -65,7 +63,7 @@ def bial_pop():
 
 def bial_set_index():
     index = stack.pop()
-    val = stack.pop()
+    val = stack.pop()[0]
     arr = stack.pop()
     arr[index] = val
     stack.append(arr)
@@ -96,72 +94,158 @@ def bial_swap():
     stack.append(second)
 
 def bial_add():
-    n2 = stack.pop()[0]
-    n1 = stack.pop()[0]
-    
-    stack.append([n1+n2])
-
-def bial_subtract():
-    n2 = stack.pop()[0]
-    n1 = stack.pop()[0]
-    stack.append([n1-n2])
-
-def bial_multiply():
-    n2 = stack.pop()[0]
-    n1 = stack.pop()[0]
-    stack.append([n1*n2])
-
-def bial_divide():
-    n2 = stack.pop()[0]
-    n1 = stack.pop()[0]
-    stack.append([n1/n2])
-
-def bial_and():
-    n2 = stack.pop()[0]
-    n1 = stack.pop()[0]
-    if n1 and n2:
-        stack.append([1])
-    else:
-        stack.append([0])
-
-def bial_not():
-    n1 = stack.pop()[0]
-    if n1 == 0:
-        stack.append([1])
-    else:
-        stack.append([0])
-
-def bial_or():
-    n2 = stack.pop()[0]
-    n1 = stack.pop()[0]
-    if n1 or n2:
-        stack.append([1])
-    else:
-        stack.append([0])
-
-def bial_less_than():
-    n2 = stack.pop()[0]
-    n1 = stack.pop()[0]
-    if n1<n2:
-        stack.append([1])
-    else:
-        stack.append([0])
-
-def bial_greater_than():
-    n2 = stack.pop()[0]
-    n1 = stack.pop()[0]
-    if n1>n2:
-        stack.append([1])
-    else:
-        stack.append([0])
-
-def bial_equal():
+    temp = []
     n2 = stack.pop()
     n1 = stack.pop()
-    if n1 == n2:
-        stack.append([1])
+    if len(n1) <= len(n2):
+        for i in range(0, len(n2)-len(n1)):
+            n1.append(0)
     else:
-        stack.append([0])
+        for i in range(0, len(n1)-len(n2)):
+            n2.append(0)
+
+    for i in range(0,len(n2)):
+        temp.append(n2[i]+n1[i])
+    
+    stack.append(temp)
+
+def bial_subtract():
+    temp = []
+    n2 = stack.pop()
+    n1 = stack.pop()
+    if len(n1) <= len(n2):
+        for i in range(0, len(n2)-len(n1)):
+            n1.append(0)
+    else:
+        for i in range(0, len(n1)-len(n2)):
+            n2.append(0)
+
+    for i in range(0,len(n2)):
+        temp.append(n2[i]-n1[i])
+    
+    stack.append(temp)
+
+def bial_multiply():
+    temp = []
+    n2 = stack.pop()
+    n1 = stack.pop()
+    if len(n1) <= len(n2):
+        for i in range(0, len(n2)-len(n1)):
+            n1.append(0)
+    else:
+        for i in range(0, len(n1)-len(n2)):
+            n2.append(0)
+
+    for i in range(0,len(n2)):
+        temp.append(n2[i]*n1[i])
+    
+    stack.append(temp)
+
+def bial_divide():
+    temp = []
+    n2 = stack.pop()
+    n1 = stack.pop()
+    if len(n1) <= len(n2):
+        for i in range(0, len(n2)-len(n1)):
+            n1.append(0)
+    else:
+        for i in range(0, len(n1)-len(n2)):
+            n2.append(0)
+
+    for i in range(0,len(n2)):
+        temp.append(n2[i]/n1[i])
+    
+    stack.append(temp)
+
+def bial_and():
+    temp = []
+    n2 = stack.pop()
+    n1 = stack.pop()
+    if len(n1) <= len(n2):
+        for i in range(0, len(n2)-len(n1)):
+            n1.append(0)
+    else:
+        for i in range(0, len(n1)-len(n2)):
+            n2.append(0)
+
+    for i in range(0,len(n2)):
+        temp.append(int(n2[i] and n1[i]))
+    
+    stack.append(temp)
+
+def bial_not():
+    temp = []
+    n1 = stack.pop()
+    for i in range(0,len(n1)):
+        if n1[i] == 0:
+            temp.append(1)
+        else:
+            temp.append(0)
+    stack.append(temp)
+
+def bial_or():
+    temp = []
+    n2 = stack.pop()
+    n1 = stack.pop()
+    if len(n1) <= len(n2):
+        for i in range(0, len(n2)-len(n1)):
+            n1.append(0)
+    else:
+        for i in range(0, len(n1)-len(n2)):
+            n2.append(0)
+
+    for i in range(0,len(n2)):
+        temp.append(int(n2[i] or n1[i]))
+    
+    stack.append(temp)
+
+def bial_less_than():
+    temp = []
+    n2 = stack.pop()
+    n1 = stack.pop()
+    if len(n1) <= len(n2):
+        for i in range(0, len(n2)-len(n1)):
+            n1.append(0)
+    else:
+        for i in range(0, len(n1)-len(n2)):
+            n2.append(0)
+
+    for i in range(0,len(n2)):
+        temp.append(int(n2[i] < n1[i]))
+    
+    stack.append(temp)
+
+def bial_greater_than():
+    temp = []
+    n2 = stack.pop()
+    n1 = stack.pop()
+    if len(n1) <= len(n2):
+        for i in range(0, len(n2)-len(n1)):
+            n1.append(0)
+    else:
+        for i in range(0, len(n1)-len(n2)):
+            n2.append(0)
+
+    for i in range(0,len(n2)):
+        temp.append(int(n2[i] > n1[i]))
+    
+    stack.append(temp)
+
+def bial_equal():
+    temp = []
+    n2 = stack.pop()
+    n1 = stack.pop()
+    if len(n1) <= len(n2):
+        for i in range(0, len(n2)-len(n1)):
+            n1.append(0)
+    else:
+        for i in range(0, len(n1)-len(n2)):
+            n2.append(0)
+
+    for i in range(0,len(n2)):
+        temp.append(int(n2[i] == n1[i]))
+    
+    stack.append(temp)
 
 def bial_skip():
     count = stack.pop()[0]
